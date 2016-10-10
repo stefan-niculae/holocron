@@ -1,0 +1,27 @@
+{
+  "name": "static",
+  "version": "0.0.1",
+  "description": "neural network visualization",
+  "main": "server.py",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/stefan1niculae/holocron"
+  },
+  "keywords": [
+    "neural",
+    "network",
+    "visualization"
+  ],
+  "author": "Stefan Niculae & Andreea-Daniela Ene",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stefan1niculae/holocron/issues"
+  },
+  "homepage": "https://github.com/stefan1niculae/holocron",
+  "dependencies": {
+    "semantic-ui": "^2.2.4"
+  }
+}
