@@ -7,7 +7,7 @@
 <body>
     {# TODO .less for style #}
     <div id=plot style="width: 480px; height: 400px;"><!-- Plotly chart will be drawn inside this DIV --></div>
-
+    <button id=regen-button>Re-generate points</button>
 
     <script src="{{ url_for('static', filename='node_modules/jquery/dist/jquery.min.js') }}"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>  {# TODO install via npm #}
