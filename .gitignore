@@ -11,3 +11,6 @@ node_modules
 # Compiled
 static/scripts/*.js
 static/scripts/*.js.map
+
+
+.DS_Store

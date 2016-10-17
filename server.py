@@ -1,9 +1,13 @@
 #! /usr/bin/env python
 
 import numpy as np
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, send_from_directory
 app = Flask(__name__)
 
+# additional static path for npm
+@app.route('/npm/<path:filename>')
+def npm(filename):
+    return send_from_directory('node_modules', filename)
 
 # Constants
 NO_CONTENT = ('', 204)
