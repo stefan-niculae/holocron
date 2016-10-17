@@ -4,7 +4,7 @@
   "description": "neural network visualization",
   "main": "server.py",
   "scripts": {
-    "postinstall": "echo coffe version is `coffe --version`"
+    "postinstall": "echo coffe version is `node_modules/coffee-script/bin/coffee --version`"
   },
   "repository": {
     "type": "git",
