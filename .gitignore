@@ -11,6 +11,8 @@ node_modules
 # Compiled
 static/scripts/*.js
 static/scripts/*.js.map
+static/style/*.css
+static/style/*.css.map
 
 
 .DS_Store
