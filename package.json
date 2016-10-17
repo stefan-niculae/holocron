@@ -4,7 +4,7 @@
   "description": "neural network visualization",
   "main": "server.py",
   "scripts": {
-    "postinstall": "node_modules/coffee-script/bin/coffee --compile --map static/scripts && sass --update static/style"
+    "postinstall": "./node_modules/coffee-script/bin/coffee --compile --map static/scripts && ./node_modules/node-sass/bin/node-sass --source-map true static/style -o static/style"
   },
   "repository": {
     "type": "git",
