@@ -12,7 +12,7 @@
     <button id=regen-button>Re-generate points</button>
 
     <script src="{{ url_for('npm', filename='jquery/dist/jquery.min.js') }}"></script>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>  {# TODO install via npm #}
+    <script src="{{ url_for('npm', filename='plotly.js/dist/plotly-basic.min.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/test.js') }}"></script>
 </body>
 </html>
