@@ -1,0 +1,10 @@
+Gradient:
+  Color 1: #5f2c82
+  Color 2: #49a09d
+  link: http://uigradients.com/#CalmDarya
+
+Logo:
+  link: http://www.flaticon.com/free-icon/side-to-side-of-a-cube_33079
+
+Favicon:
+  generator: www.favicon-generator.org

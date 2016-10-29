@@ -1,17 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="192x192" href="{{ url_for('static', filename='images/apple-icon.png') }}">
+  <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='images/apple-icon.png') }}">
+  <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', filename='images/favicon-96x96.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32x32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon-16x16.png') }}">
+
+  <title>Holocron AI</title>
 {#    <link rel="stylesheet" href="{{ url_for('static', filename='style/test.css') }}">#}
+
+
 </head>
 <body>
 
-    <div id=plot style="width: 480px; height: 400px;"><!-- Plotly chart will be drawn inside this DIV --></div>
-    <button id=regen-button>Re-generate points</button>
+  <div id=plot style="width: 480px; height: 400px;"><!-- Plotly chart will be drawn inside this DIV --></div>
+  <button id=regen-button>Re-generate points</button>
 
-{#    <script src="{{ url_for('npm', filename='jquery/dist/jquery.min.js') }}"></script>#}
-{#    <script src="{{ url_for('npm', filename='plotly.js/dist/plotly-basic.min.js') }}"></script>#}
-    <script src="{{ url_for('static', filename='scripts/bundle.js') }}"></script>
+  <script src="{{ url_for('static', filename='scripts/bundle.js') }}"></script>
 </body>
 </html>
