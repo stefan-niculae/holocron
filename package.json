@@ -1,10 +1,10 @@
 {
-  "name": "static",
+  "name": "Holocron-frontend",
   "version": "0.0.1",
   "description": "neural network visualization",
   "main": "server.py",
   "scripts": {
-    "postinstall": "webpack --config ./webpack.config.js --progress --display-error-details -dp"
+    "postinstall": "./node_modules/webpack/bin/webpack.js --config ./webpack.config.js --progress --display-error-details -dp"
   },
   "repository": {
     "type": "git",

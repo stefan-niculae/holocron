@@ -1,4 +1,4 @@
-$ = require 'jQuery'
+$ = require 'jquery'
 Plotly = require 'plotly.js/lib/core'
 
 
