@@ -1,4 +1,5 @@
 # Stylesheets
+require '../style/custom'
 
 $ = require 'jquery'
 Plotly = require 'plotly.js/lib/core'
