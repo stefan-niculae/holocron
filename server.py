@@ -4,10 +4,12 @@ import numpy as np
 from flask import Flask, render_template, jsonify, send_from_directory
 app = Flask(__name__)
 
+
 # additional static path for npm
 @app.route('/npm/<path:filename>')
 def npm(filename):
     return send_from_directory('node_modules', filename)
+
 
 # Constants
 NO_CONTENT = ('', 204)
@@ -34,7 +36,7 @@ generate_dataset()
 
 @app.route('/')
 def hello():
-    return render_template('home.html', x=100, l=[1, 2, 3])
+    return render_template('home.html')
 
 
 @app.route('/coords')
@@ -50,7 +52,6 @@ def regen():
     generate_dataset()
     return NO_CONTENT
 
-#app.run(debug=True, port=8080, host='0.0.0.0')
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
 
