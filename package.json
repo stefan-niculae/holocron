@@ -4,7 +4,7 @@
   "description": "neural network visualization",
   "main": "server.py",
   "scripts": {
-    "postinstall": "./node_modules/webpack/bin/webpack.js --config ./webpack.config.js --progress --display-error-details"
+    "postinstall": "./node_modules/webpack/bin/webpack.js --config ./webpack.config.js --progress --display-error-details -dp"
   },
   "repository": {
     "type": "git",
@@ -23,7 +23,9 @@
   "homepage": "https://github.com/stefan1niculae/holocron",
   "dependencies": {
     "jquery": "^3.1.1",
-    "plotly.js": "^1.18.0",
+    "plotly.js": "^1.18.0"
+  },
+  "devDependencies": {
     "coffee-loader": "^0.7.2",
     "coffee-script": "^1.11.1",
     "css-loader": "^0.25.0",
