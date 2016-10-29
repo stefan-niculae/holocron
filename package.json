@@ -4,7 +4,7 @@
   "description": "neural network visualization",
   "main": "server.py",
   "scripts": {
-    "postinstall": "./node_modules/webpack/bin/webpack.js --progress --display-error-details"
+    "postinstall": "./node_modules/webpack/bin/webpack.js --config ./webpack.config.js --progress --display-error-details"
   },
   "repository": {
     "type": "git",
