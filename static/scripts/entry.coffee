@@ -1,6 +1,9 @@
+# Stylesheets
+
 $ = require 'jquery'
 Plotly = require 'plotly.js/lib/core'
-
+#ReactDOM = require 'react-dom'
+#{h1, h2, div, text, span, crel} = require 'teact'
 
 $ ->
   drawPlot()

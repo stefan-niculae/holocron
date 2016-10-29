@@ -2,7 +2,7 @@
   "name": "Holocron-frontend",
   "version": "0.0.1",
   "description": "neural network visualization",
-  "main": "server.py",
+  "main": "static/scripts/entry.coffee",
   "scripts": {
     "postinstall": "./node_modules/webpack/bin/webpack.js --config ./webpack.config.js --progress --display-error-details -dp"
   },
@@ -22,8 +22,12 @@
   },
   "homepage": "https://github.com/stefan1niculae/holocron",
   "dependencies": {
-    "jquery": "^3.1.1",
-    "plotly.js": "^1.18.0"
+    "jquery": "^2.2.4",
+    "plotly.js": "^1.18.0",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
+    "semantic-ui": "^2.2.6",
+    "teact": "^1.1.2"
   },
   "devDependencies": {
     "coffee-loader": "^0.7.2",
