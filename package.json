@@ -23,9 +23,7 @@
   "homepage": "https://github.com/stefan1niculae/holocron",
   "dependencies": {
     "jquery": "^3.1.1",
-    "plotly.js": "^1.18.0"
-  },
-  "devDependencies": {
+    "plotly.js": "^1.18.0",
     "coffee-loader": "^0.7.2",
     "coffee-script": "^1.11.1",
     "css-loader": "^0.25.0",
