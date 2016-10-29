@@ -13,6 +13,7 @@ static/scripts/*.js
 static/scripts/*.js.map
 static/style/*.css
 static/style/*.css.map
+static/scripts/bundle.js
 
 
 .DS_Store

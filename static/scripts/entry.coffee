@@ -1,3 +1,7 @@
+$ = require 'jQuery'
+Plotly = require 'plotly.js/lib/core'
+
+
 $ ->
   drawPlot()
 

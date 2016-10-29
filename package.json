@@ -4,7 +4,7 @@
   "description": "neural network visualization",
   "main": "server.py",
   "scripts": {
-    "postinstall": "./node_modules/coffee-script/bin/coffee --compile --map static/scripts && ./node_modules/node-sass/bin/node-sass --source-map true static/style -o static/style"
+    "postinstall": "node_modules/webpack/bin/webpack.js --progress --display-error-details"
   },
   "repository": {
     "type": "git",
@@ -22,10 +22,17 @@
   },
   "homepage": "https://github.com/stefan1niculae/holocron",
   "dependencies": {
-    "coffee-script": "^1.11.1",
     "jquery": "^3.1.1",
-    "node-sass": "^3.10.1",
     "plotly.js": "^1.18.0"
+  },
+  "devDependencies": {
+    "coffee-loader": "^0.7.2",
+    "coffee-script": "^1.11.1",
+    "css-loader": "^0.25.0",
+    "node-sass": "^3.10.1",
+    "sass-loader": "^4.0.2",
+    "style-loader": "^0.13.1",
+    "webpack": "^1.13.3"
   },
   "engines": {
     "node": "5.11.1",
