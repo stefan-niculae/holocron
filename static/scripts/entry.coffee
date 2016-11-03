@@ -3,6 +3,11 @@ require '../style/custom'
 
 $ = require 'jquery'
 Plotly = require 'plotly.js/lib/core'
+
+window.jQuery = $
+# semantic = require '../../semantic/dist/semantic'
+semantic = require 'semantic-ui/dist/semantic'
+
 #ReactDOM = require 'react-dom'
 #{h1, h2, div, text, span, crel} = require 'teact'
 
