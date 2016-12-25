@@ -13,8 +13,8 @@ colors =
 
 # from backend
 bounds =
-  x: min: 0, max: 1
-  y: min: 0, max: 1
+  x: min: -1, max: 1
+  y: min: -1, max: 1
 # from backend
 ws = [-1.25, 1, 0]
 
@@ -29,8 +29,9 @@ points =
 
 
 clamp_magnitude = (x) ->
-  if Math.abs(x) < CONFIGS.minVal
-    CONFIGS.minVal * Math.sign(x)
+  sign = if x >= 0 then 1 else -1
+  if Math.abs(x) < CONFIGS.epsilon
+    CONFIGS.epsilon * sign
   else
     x
 
@@ -115,4 +116,4 @@ data = [
   pointsA
 ]
 
-Plotly.newPlot('chart-div', data, layout);
+Plotly.newPlot('plot', data, layout)

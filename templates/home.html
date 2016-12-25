@@ -17,10 +17,12 @@
 <body>
 
   <div class="ui container">
-    <div id=plot style="width: 480px; height: 400px;"><!-- Plotly chart will be drawn inside this DIV --></div>
+    <div id=plot style="width: 600px; height: 600px;"><!-- Plotly chart will be drawn inside this DIV --></div>
     <button id=regen-button class="ui center button">Re-generate points</button>
   </div>
 
+
+{#               <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>#}
 
   <script src="{{ url_for('static', filename='scripts/bundle.js') }}"></script>
 </body>

@@ -2,6 +2,7 @@
 
 import numpy as np
 from flask import Flask, render_template, jsonify, send_from_directory
+import perceptron
 app = Flask(__name__)
 
 
@@ -14,42 +15,41 @@ def npm(filename):
 # Constants
 NO_CONTENT = ('', 204)
 
-# Configs
-N_POINTS = 50
-# MAX_COORD = 10  # x and y -- it's a square
-
-A_points = []
-B_points = []
-
-
-def generate_dataset():
-    def generate_points(around, points_percentage=.5, dimensions=2):
-        n_points = int(N_POINTS * points_percentage)
-        return np.random.normal(around, size=(n_points, dimensions))
-
-    global A_points, B_points
-    A_points = generate_points(around=3)
-    B_points = generate_points(around=7)
-
-generate_dataset()
-
 
 @app.route('/')
-def hello():
+def home():
     return render_template('home.html')
 
 
-@app.route('/coords')
-def coords():
-    return jsonify(
-        A=A_points.tolist(),
-        B=B_points.tolist()
-    )
+@app.route('/bounds')
+def bounds():
+    M = perceptron.COORD_MAX * 1  # TODO more elegant
+    return jsonify({
+        'x': {'min': -M, 'max': M},  # a square
+        'y': {'min': -M, 'max': M}
+    })
+
+
+@app.route('/points')
+def points():
+    A_x, A_y, A_label = perceptron.generate_A()
+    B_x, B_y, B_label = perceptron.generate_B()
+
+    return jsonify({
+        'A': {
+            'x': A_x.tolist(),
+            'y': A_y.tolist()
+        },
+        'B': {
+            'x': B_x.tolist(),
+            'y': B_y.tolist()
+        },
+    })
 
 
 @app.route('/regen')
 def regen():
-    generate_dataset()
+    # generate_dataset()
     return NO_CONTENT
 
 if __name__ == '__main__':
