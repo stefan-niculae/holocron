@@ -8,3 +8,11 @@ Logo:
 
 Favicon:
   generator: www.favicon-generator.org
+
+
+Other fonts considered:
+  Abel
+  Anonymous
+  Dosis
+  Universe
+  
