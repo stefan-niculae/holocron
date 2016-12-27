@@ -55,7 +55,7 @@ def training_history():
 
 @app.route('/regen')
 def regen():
-    # generate_dataset()
+    dataset.generate()
     return NO_CONTENT
 
 if __name__ == '__main__':

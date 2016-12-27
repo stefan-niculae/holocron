@@ -55,7 +55,8 @@ class Dataset:
 
 class Perceptron:
     def __init__(self, dimension=2):
-        self.weights = np.random.uniform(-1, 1, size=dimension + 1)  # random init, the last dimension is the bias
+        self.dimension = dimension
+        self.weights = []
         self.history = []
 
     @staticmethod
@@ -65,6 +66,9 @@ class Perceptron:
     def train(self, dataset, lr=.01, n_epochs=100):
         def predict(p):
             return Perceptron.hardlims(self.weights.dot(p))
+
+        self.weights = np.random.uniform(-1, 1, size=self.dimension + 1)  # random init, the last dimension is the bias
+        self.history = []
 
         for epoch in range(n_epochs):
             # np.random.shuffle(data)  # TODO?

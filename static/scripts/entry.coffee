@@ -209,36 +209,42 @@ updateLine = (bounds, weights) ->
   [a, b, c] = weights.map clamp_magnitude
   f = (x) -> -(a * x + c) / b
 
+  console.log weights
+
   fL = new Point bounds.x.min, f(bounds.x.min), 'fA'  # left
   fR = new Point bounds.x.max, f(bounds.x.max), 'fB'  # right
   interwoven = interweaveIntersections fL, fR, bounds
   interwovenA = interwoven.filter (c) -> orientation(fL, fR, c) >= 0  # all corners to the left AND the intersections
   interwovenB = interwoven.filter (c) -> orientation(fL, fR, c) <= 0  # all corners to the right AND the intersections
 
+  shapes = [
+    type: 'line'
+    x0:   bounds.x.min
+    y0:   f(bounds.x.min)
+    x1:   bounds.x.max
+    y1:   f(bounds.x.max)
+    line:
+      color: CONF.colors.purple
+      width: CONF.lineWidth
+  ]
+
+  # FIXME: wrong shade for weights = [.51, -.13, -.007] (blue points in lower left, orange in top right)
+  # FIXME: other examples [.52, -.031, .3] [.58, -.2, .038] [.58, -.2, .038] [.67, -.11, -.07] [.13, -.18, -.007] [.29, -.37, -.45]
+  # FIXME: when the line starts from top right and ends on bottom left
+
+  if interwovenA.length > 0  # not outside the viewing window
+    shapes.push
+      type: 'path'
+      path: 'M ' + interwovenA.join(' L ') + ' Z'
+      fillcolor: CONF.colors.fadedBlue
+      line: color: 'rgba(0,0,0,0)'
+
+  if interwovenB.length > 0
+    shapes.push
+      type: 'path'
+      path: 'M ' + interwovenB.join(' L ') + ' Z'
+      fillcolor: CONF.colors.fadedOrange
+      line: color: 'rgba(0,0,0,0)'
 
   # update just the shapes, not the whole chart
-  Plotly.relayout 'points-chart',
-    shapes: [
-      {
-        type: 'line'
-        x0:   bounds.x.min
-        y0:   f(bounds.x.min)
-        x1:   bounds.x.max
-        y1:   f(bounds.x.max)
-        line:
-          color:   CONF.colors.purple
-          width: CONF.lineWidth
-      }
-      {
-        type: 'path',
-        path: 'M ' + interwovenA.join(' L ') + ' Z'
-        fillcolor: CONF.colors.fadedBlue
-        line: color: 'rgba(0,0,0,0)'
-      }
-      {
-        type: 'path',
-        path: 'M ' + interwovenB.join(' L ') + ' Z'
-        fillcolor: CONF.colors.fadedOrange
-        line: color: 'rgba(0,0,0,0)'
-      }
-    ]
+  Plotly.relayout 'points-chart', shapes: shapes
