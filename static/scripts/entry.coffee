@@ -140,6 +140,7 @@ $ ->
   $ '#regen-button'
     .click ->
       $.ajax '/regen'
+      # TODO: clear the timeout for iterating training history here
       drawPlot()
 
 
@@ -194,7 +195,7 @@ drawPlot = ->
 
           i++
           return if i is history.length  # stop looping
-          setTimeout iterator, CONF.nextEpochDelay
+          setTimeout(iterator, CONF.nextEpochDelay)
         iterator()
 
 
@@ -209,13 +210,17 @@ updateLine = (bounds, weights) ->
   [a, b, c] = weights.map clamp_magnitude
   f = (x) -> -(a * x + c) / b
 
-  console.log weights
+  flip = (o) ->  # TODO: is this a hack? test for centroids that are not lower-left and upper-right and check actual number of misclassified against graph
+    if -a/b > 1  # slope
+      o * -1
+    else
+      o
 
   fL = new Point bounds.x.min, f(bounds.x.min), 'fA'  # left
   fR = new Point bounds.x.max, f(bounds.x.max), 'fB'  # right
   interwoven = interweaveIntersections fL, fR, bounds
-  interwovenA = interwoven.filter (c) -> orientation(fL, fR, c) >= 0  # all corners to the left AND the intersections
-  interwovenB = interwoven.filter (c) -> orientation(fL, fR, c) <= 0  # all corners to the right AND the intersections
+  interwovenA = interwoven.filter (c) -> flip(orientation fL, fR, c) >= 0  # all corners to the left AND the intersections
+  interwovenB = interwoven.filter (c) -> flip(orientation fL, fR, c) <= 0  # all corners to the right AND the intersections
 
   shapes = [
     type: 'line'
@@ -227,10 +232,6 @@ updateLine = (bounds, weights) ->
       color: CONF.colors.purple
       width: CONF.lineWidth
   ]
-
-  # FIXME: wrong shade for weights = [.51, -.13, -.007] (blue points in lower left, orange in top right)
-  # FIXME: other examples [.52, -.031, .3] [.58, -.2, .038] [.58, -.2, .038] [.67, -.11, -.07] [.13, -.18, -.007] [.29, -.37, -.45]
-  # FIXME: when the line starts from top right and ends on bottom left
 
   if interwovenA.length > 0  # not outside the viewing window
     shapes.push
