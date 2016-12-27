@@ -22,11 +22,13 @@ CONF =
     fadedBlue:   'rgba(148, 188, 216, .25)'
     purple:      'rgba(128, 0,   128, .6)'
     lightGrey:   'rgba(200, 200, 200, 1)'
+  nextEpochDelay: 100  #ms
 
 
 clamp_magnitude = (x) ->
   """
   no smaller than configured epsilon
+  guards against purely vertical or purely horizontal lines
   """
   sign = if x >= 0 then 1 else -1
   if Math.abs(x) < CONF.epsilon
@@ -51,6 +53,8 @@ orientation = (A, B, C) ->
 
 class Point
   constructor: (@x, @y, @name) ->
+
+  toString: -> "#{@x},#{@y}"
 
 class Line
   constructor: (@start, @end) ->
@@ -97,14 +101,15 @@ lineIntersection = (line1, line2) ->
 
 interweaveIntersections = (fL, fR, bounds) ->
   """
-  a-----P----b
-  |      \   |
-  |       -  |
-  |        \ |
-  |         -Q
+  b-----P----c
+  |    /     |
+  |  /       |
+  |/         |
+  Q          |
   |          |
-  c__________d
-  we want the order a P b Q d c
+  a__________d
+  we want the order a Q b P c d
+  ie: in one direction (clockwise chosen here)
   """
   corners = [
     new Point bounds.x.min, bounds.y.min, 'left bottom'
@@ -117,7 +122,7 @@ interweaveIntersections = (fL, fR, bounds) ->
   interwoven = []
   for i in [0...corners.length]
     start = corners[i]
-    endIndex = i+1
+    endIndex = i + 1
     endIndex = 0 if endIndex == corners.length # wraparound at last element
     end = corners[endIndex]
     edge = new Line start, end
@@ -139,29 +144,9 @@ $ ->
 
 
 drawPlot = ->
-  # TODO, from backend
-  ws = [-.75, 1, 0]  # /
-#  ws = [1.25, 1, .4]  #  \
-#  ws = [1.25, 1, -1]  #  \
-#  ws = [.5, 1, -.25]  #  \
-
-  ###
-    ax + by + c = 0
-    by + ax + c = 0
-    by = -(ax + c)
-     y = -(ax + c) / b
-  ###
-  [a, b, c] = ws.map clamp_magnitude
-  f = (x) -> -(a * x + c) / b
 
   # TODO more elegant solution, state?
   $.getJSON '/bounds', (bounds) ->
-
-    fL = new Point bounds.x.min, f(bounds.x.min), 'fA'  # left
-    fR = new Point bounds.x.max, f(bounds.x.max), 'fB'  # right
-    interwoven = interweaveIntersections fL, fR, bounds
-    interwovenA = interwoven.filter (c) -> orientation(fL, fR, c) >= 0  # all corners to the left AND the intersections
-    interwovenB = interwoven.filter (c) -> orientation(fL, fR, c) <= 0  # all corners to the right AND the intersections
 
     $.getJSON '/points', (points) ->
       pointsA =
@@ -182,7 +167,6 @@ drawPlot = ->
           size: CONF.markerSize
         name: 'class B'
 
-
       layout =
       #  title:     'classification'
         hovermode: 'closest'
@@ -194,31 +178,6 @@ drawPlot = ->
           zerolinecolor: CONF.colors.lightGrey
           hoverformat: '.1f'
           range: [bounds.y.min, bounds.y.max]
-        shapes: [
-          {
-            type: 'line'
-            x0:   bounds.x.min
-            y0:   f(bounds.x.min)
-            x1:   bounds.x.max
-            y1:   f(bounds.x.max)
-            line:
-              color:   CONF.colors.purple
-              width: CONF.lineWidth
-          }
-          {
-            type: 'path',
-            path: 'M ' + interwovenA.map((p) -> "#{p.x},#{p.y}").join(' L ') + ' Z'
-            fillcolor: CONF.colors.fadedBlue
-            line: color: 'rgba(0,0,0,0)'
-          }
-          {
-            type: 'path',
-            path: 'M ' + interwovenB.map((p) -> "#{p.x},#{p.y}").join(' L ') + ' Z'
-            fillcolor: CONF.colors.fadedOrange
-            line: color: 'rgba(0,0,0,0)'
-          }
-        ]
-
 
       data = [
         pointsA
@@ -226,3 +185,60 @@ drawPlot = ->
       ]
 
       Plotly.newPlot 'points-chart', data, layout
+
+
+      $.getJSON '/training_history', (history) ->
+        i = 0
+        iterator = () ->
+          updateLine bounds, history[i].weights
+
+          i++
+          return if i is history.length  # stop looping
+          setTimeout iterator, CONF.nextEpochDelay
+        iterator()
+
+
+
+updateLine = (bounds, weights) ->
+  """
+  ax + by + c = 0
+  by + ax + c = 0
+  by = -(ax + c)
+   y = -(ax + c) / b
+  """
+  [a, b, c] = weights.map clamp_magnitude
+  f = (x) -> -(a * x + c) / b
+
+  fL = new Point bounds.x.min, f(bounds.x.min), 'fA'  # left
+  fR = new Point bounds.x.max, f(bounds.x.max), 'fB'  # right
+  interwoven = interweaveIntersections fL, fR, bounds
+  interwovenA = interwoven.filter (c) -> orientation(fL, fR, c) >= 0  # all corners to the left AND the intersections
+  interwovenB = interwoven.filter (c) -> orientation(fL, fR, c) <= 0  # all corners to the right AND the intersections
+
+
+  # update just the shapes, not the whole chart
+  Plotly.relayout 'points-chart',
+    shapes: [
+      {
+        type: 'line'
+        x0:   bounds.x.min
+        y0:   f(bounds.x.min)
+        x1:   bounds.x.max
+        y1:   f(bounds.x.max)
+        line:
+          color:   CONF.colors.purple
+          width: CONF.lineWidth
+      }
+      {
+        type: 'path',
+        path: 'M ' + interwovenA.join(' L ') + ' Z'
+        fillcolor: CONF.colors.fadedBlue
+        line: color: 'rgba(0,0,0,0)'
+      }
+      {
+        type: 'path',
+        path: 'M ' + interwovenB.join(' L ') + ' Z'
+        fillcolor: CONF.colors.fadedOrange
+        line: color: 'rgba(0,0,0,0)'
+      }
+    ]

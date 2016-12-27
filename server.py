@@ -1,9 +1,12 @@
 #! /usr/bin/env python
 
-import numpy as np
 from flask import Flask, render_template, jsonify, send_from_directory
-import perceptron
+import processing
 app = Flask(__name__)
+
+# when server starts, generate a dataset and initialize a perceptron
+dataset = processing.Dataset()
+perceptron = processing.Perceptron()
 
 
 # additional static path for npm
@@ -23,7 +26,7 @@ def home():
 
 @app.route('/bounds')
 def bounds():
-    M = perceptron.COORD_MAX * 1  # TODO more elegant
+    M = dataset.coord_max
     return jsonify({
         'x': {'min': -M, 'max': M},  # a square
         'y': {'min': -M, 'max': M}
@@ -32,19 +35,22 @@ def bounds():
 
 @app.route('/points')
 def points():
-    A_x, A_y, A_label = perceptron.generate_A()
-    B_x, B_y, B_label = perceptron.generate_B()
-
     return jsonify({
         'A': {
-            'x': A_x.tolist(),
-            'y': A_y.tolist()
+            'x': dataset.A_x.tolist(),
+            'y': dataset.A_y.tolist()
         },
         'B': {
-            'x': B_x.tolist(),
-            'y': B_y.tolist()
+            'x': dataset.B_x.tolist(),
+            'y': dataset.B_y.tolist()
         },
     })
+
+
+@app.route('/training_history')
+def training_history():
+    perceptron.train(dataset)
+    return jsonify(perceptron.history)
 
 
 @app.route('/regen')
@@ -53,5 +59,5 @@ def regen():
     return NO_CONTENT
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True)
 
