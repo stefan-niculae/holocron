@@ -26,10 +26,10 @@ def home():
 
 @app.route('/bounds')
 def bounds():
-    M = dataset.coord_max
+    m = dataset.coord_max
     return jsonify({
-        'x': {'min': -M, 'max': M},  # a square
-        'y': {'min': -M, 'max': M}
+        'x': {'min': -m, 'max': m},  # a square
+        'y': {'min': -m, 'max': m}
     })
 
 
@@ -60,4 +60,3 @@ def regen():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
