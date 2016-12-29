@@ -30,13 +30,17 @@ class Interface extends React.Component
       isTraining: no
       finishedTraining: no
 
+    @fetchData()
 
+
+  fetchData: =>
     getJSON '/bounds', (bounds) =>
       @setState {bounds}
     getJSON '/points', (points) =>
       @setState {points}
     getJSON '/training_history', (history) =>
       @setState {history}
+
 
   startTraining: =>
     @setState
@@ -63,7 +67,13 @@ class Interface extends React.Component
 
 
   regeneratePoints: =>
-    console.log 'regen'
+    getJSON '/regen', =>
+      @setState
+        currentEpoch: null
+        isTraining: no
+        finishedTraining: no
+      , =>
+        @fetchData()
 
 
   render: ->

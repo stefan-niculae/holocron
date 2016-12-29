@@ -57,6 +57,7 @@ def training_history():
 @app.route('/regen')
 def regen():
     dataset.generate()
+    perceptron.reset()
     return NO_CONTENT
 
 if __name__ == '__main__':

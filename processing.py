@@ -59,6 +59,10 @@ class Perceptron:
         self.weights = None
         self.history = None
 
+    def reset(self):
+        self.weights = None
+        self.history = None
+
     @staticmethod
     def hardlims(n):  # activation function
         return 1 if n > 0 else -1

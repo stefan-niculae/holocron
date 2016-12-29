@@ -5,7 +5,6 @@ Plotly = require 'plotly.js/lib/core'
 
 
 
-
 CONF =
   divId:      'points-plot'
   epsilon:    1e-8
@@ -25,7 +24,7 @@ class PointsPlot extends React.Component
   render: ->
     div "##{CONF.divId} .ui container plot"
 
-  # TODO make shouldComponent update for re-updating only if points differ? (immutablejs?)
+  # TODO make shouldComponentUpdate for re-updating only if points differ? (immutablejs?)
 
   componentDidMount: (props) ->
     @drawPlot props
@@ -129,12 +128,6 @@ class PointsPlot extends React.Component
         line: color: 'rgba(0,0,0,0)'
 
     return shapes
-
-
-
-
-
-
 
 
 
