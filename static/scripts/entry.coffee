@@ -15,7 +15,7 @@ getJSON = require './utils'
 
 
 CONF =
-  nextEpochDelay: 100  #ms
+  nextEpochDelay: 10  #ms
 
 
 
