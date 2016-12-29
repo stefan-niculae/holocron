@@ -17,8 +17,8 @@ class Dataset:
         self.generate()
 
     def generate(self):
-        m = self.coord_max * .4
-        s = self.coord_max * .2
+        m = self.coord_max * .4  # TODO random centroids for A and B? (but not too close to the edge)
+        s = self.coord_max * .2  # TODO random spread for A and B (but not too high compared to edges)
 
         self.A_x, self.A_y, self.A_label = self.generate_for_class(
             center=(-m, -m),
@@ -56,16 +56,19 @@ class Dataset:
 class Perceptron:
     def __init__(self, dimension=2):
         self.dimension = dimension
-        self.weights = []
-        self.history = []
+        self.weights = None
+        self.history = None
 
     @staticmethod
     def hardlims(n):  # activation function
         return 1 if n > 0 else -1
 
-    def train(self, dataset, lr=.01, n_epochs=100):
-        def predict(p):
-            return Perceptron.hardlims(self.weights.dot(p))
+    def predict(self, point):
+        return Perceptron.hardlims(self.weights.dot(point))
+
+    def train(self, dataset, lr=.01, n_epochs=100, keep_history=False):
+        if keep_history and self.history:
+            return  # don't reset the already present history
 
         self.weights = np.random.uniform(-1, 1, size=self.dimension + 1)  # random init, the last dimension is the bias
         self.history = []
@@ -73,10 +76,10 @@ class Perceptron:
         for epoch in range(n_epochs):
             # np.random.shuffle(data)  # TODO?
             for point, expected in dataset:
-                error = expected - predict(point)
+                error = expected - self.predict(point)
                 self.weights += lr * error * point
 
-            misclassified = [point for point, expected in dataset if predict(point) != expected]
+            misclassified = [point for point, expected in dataset if self.predict(point) != expected]
             self.history.append({
                 'weights': self.weights.tolist(),
                 'misclassified': [p.tolist() for p in misclassified]  # for serialization

@@ -27,7 +27,8 @@
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "semantic-ui": "^2.2.6",
-    "teact": "^1.1.2"
+    "teact": "^1.1.2",
+    "xhr": "^2.3.2"
   },
   "devDependencies": {
     "coffee-loader": "^0.7.2",

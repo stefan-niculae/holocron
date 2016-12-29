@@ -49,7 +49,7 @@ def points():
 
 @app.route('/training_history')
 def training_history():
-    perceptron.train(dataset)
+    perceptron.train(dataset, keep_history=True)
     return jsonify(perceptron.history)
 
 

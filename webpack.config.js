@@ -7,7 +7,7 @@ module.exports = {
 
   module: {
     loaders: [
-      { test: /\.coffee$/, loader: 'coffee-loader' },
+      { test: /\.coffee$/, loader: 'coffee' },
       { test: /\.css$/,    loader: 'style!css' }, // TODO extract text plugin for .css outputting
       { test: /\.sass$/,   loaders: ['style', 'css?sourceMap', 'sass?sourceMap'] }
     ]
