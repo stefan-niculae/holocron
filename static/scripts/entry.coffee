@@ -15,7 +15,7 @@ getJSON = require './utils'
 
 
 CONF =
-  nextEpochDelay: 10  #ms
+  nextEpochDelay: 100  #ms
 
 
 
@@ -27,8 +27,8 @@ class Interface extends React.Component
       history: null
 
       currentEpoch: null
+      hasStartedTraining: no
       isTraining: no
-      finishedTraining: no
 
     @fetchData()
 
@@ -45,10 +45,12 @@ class Interface extends React.Component
   startTraining: =>
     @setState
       currentEpoch: 0
+      hasStartedTraining: yes
       isTraining: yes
-      finishedTraining: no
-      , ->
-      setTimeout(@trainingIterator, CONF.nextEpochDelay)
+      , => @scheduleTrainingTimeout()
+
+  scheduleTrainingTimeout: =>
+    @trainingTimeout = setTimeout(@trainingIterator, CONF.nextEpochDelay)
 
 
   trainingIterator: =>
@@ -58,20 +60,25 @@ class Interface extends React.Component
         isTraining: no
         finishedTraining: yes
       return  # stop recursing
-    @setState currentEpoch: epoch + 1, ->
-      setTimeout(@trainingIterator, CONF.nextEpochDelay)
+    @setState currentEpoch: epoch + 1, =>
+      @scheduleTrainingTimeout()
 
 
   pauseTraining: =>
-    @setState isTraining: no
+    @setState isTraining: no, =>
+      clearTimeout @trainingTimeout if @trainingTimeout?
+
+  resumeTraining: =>
+    @setState isTraining: yes, =>
+      @scheduleTrainingTimeout()
 
 
   regeneratePoints: =>
     getJSON '/regen', =>
       @setState
         currentEpoch: null
+        hasStartedTraining: no
         isTraining: no
-        finishedTraining: no
       , =>
         @fetchData()
 
@@ -82,7 +89,7 @@ class Interface extends React.Component
         text 'loading'  # TODO loading animation
         return
 
-      if @state.history? and (@state.isTraining or @state.finishedTraining)
+      if @state.history? and @state.hasStartedTraining
         currentWeights = @state.history[@state.currentEpoch].weights
 
       crel PointsPlot,
@@ -103,9 +110,13 @@ class Interface extends React.Component
       button '#train-button .ui yellow large labeled icon button', onClick: @pauseTraining, ->
         i '.pause icon'; text 'Pause'
     else  # not training
-      if @state.finishedTraining
-        button '#train-button .ui blue large labeled icon button', onClick: @startTraining, ->
-          i '.repeat icon'; text 'Restart'
+      if @state.hasStartedTraining
+        if @state.currentEpoch >= @state.history.length - 1  # it has finished training
+          button '#train-button .ui large labeled icon button', onClick: @startTraining, ->
+            i '.repeat icon'; text 'Restart'
+        else  # hasn't finished training, it's resumed
+          button '#train-button .ui blue large labeled icon button', onClick: @resumeTraining, ->
+            i '.play icon'; text 'Resume'
       else  # training has not started
         button '#train-button .ui blue large labeled icon button', onClick: @startTraining, ->
           i '.play icon'; text 'Train'
