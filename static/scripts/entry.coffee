@@ -26,8 +26,9 @@ class Interface extends React.Component
       points: null
       history: null
 
-      isTraining: no
       currentEpoch: null
+      isTraining: no
+      finishedTraining: no
 
 
     getJSON '/bounds', (bounds) =>
@@ -38,13 +39,21 @@ class Interface extends React.Component
       @setState {history}
 
   startTraining: =>
-    @setState {currentEpoch: 0, isTraining: yes}, ->
+    @setState
+      currentEpoch: 0
+      isTraining: yes
+      finishedTraining: no
+      , ->
       setTimeout(@trainingIterator, CONF.nextEpochDelay)
 
 
   trainingIterator: =>
     epoch = @state.currentEpoch
-    return if epoch >= @state.history.length - 1
+    if epoch >= @state.history.length - 1  # reached last epoch
+      @setState
+        isTraining: no
+        finishedTraining: yes
+      return  # stop recursing
     @setState currentEpoch: epoch + 1, ->
       setTimeout(@trainingIterator, CONF.nextEpochDelay)
 
@@ -58,7 +67,7 @@ class Interface extends React.Component
         text 'loading'  # TODO loading animation
         return
 
-      if @state.history? and @state.isTraining
+      if @state.history? and (@state.isTraining or @state.finishedTraining)
         currentWeights = @state.history[@state.currentEpoch].weights
 
       crel PointsPlot,
@@ -66,17 +75,19 @@ class Interface extends React.Component
         points: @state.points
         weights: currentWeights
 
-      if not @state.isTraining
-        button '#train-button .ui positive large labeled icon button', onClick: @startTraining, ->
-          i '.play.icon'
-          text 'Train'
-      else
+      if @state.isTraining
         button '#train-button .ui large labeled icon button', onClick: @pauseTraining, ->
-          i '.pause.icon'
+          i '.pause icon'
           text 'Pause'
-
-
-
+      else  # not training
+        if @state.finishedTraining
+          button '#train-button .ui positive large labeled icon button', onClick: @startTraining, ->
+            i '.repeat icon'
+            text 'Restart'
+        else  # training has not started
+          button '#train-button .ui positive large labeled icon button', onClick: @startTraining, ->
+            i '.play icon'
+            text 'Train'
 
 
 
