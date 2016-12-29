@@ -34,8 +34,6 @@ class Interface extends React.Component
       @setState {points}
     getJSON '/training_history', (history) =>
       @setState {history}
-      console.log history
-
 
   startTraining: =>
     @setState {currentEpoch: 0, isTraining: yes}, ->
@@ -60,7 +58,6 @@ class Interface extends React.Component
 
       if @state.history? and @state.isTraining
         currentWeights = @state.history[@state.currentEpoch].weights
-        console.log 'interf render', currentWeights
 
       crel PointsPlot,
         bounds: @state.bounds

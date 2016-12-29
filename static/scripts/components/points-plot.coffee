@@ -33,8 +33,6 @@ class PointsPlot extends React.Component
 
 
   drawPlot: ->
-    console.log @props
-
     pointsA =
       x:       @props.points.A.x
       y:       @props.points.A.y
