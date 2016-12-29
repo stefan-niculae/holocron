@@ -15,7 +15,7 @@ getJSON = require './utils'
 
 
 CONF =
-  nextEpochDelay: 5  #ms
+  nextEpochDelay: 10  #ms
 
 
 
@@ -61,6 +61,11 @@ class Interface extends React.Component
   pauseTraining: =>
     @setState isTraining: no
 
+
+  regeneratePoints: =>
+    console.log 'regen'
+
+
   render: ->
     div '#interface', =>
       if not(@state.bounds? and @state.points?)
@@ -75,19 +80,25 @@ class Interface extends React.Component
         points: @state.points
         weights: currentWeights
 
-      if @state.isTraining
-        button '#train-button .ui yellow large labeled icon button', onClick: @pauseTraining, ->
-          i '.pause icon'
-          text 'Pause'
-      else  # not training
-        if @state.finishedTraining
-          button '#train-button .ui blue large labeled icon button', onClick: @startTraining, ->
-            i '.repeat icon'
-            text 'Restart'
-        else  # training has not started
-          button '#train-button .ui blue large labeled icon button', onClick: @startTraining, ->
-            i '.play icon'
-            text 'Train'
+      button '#regen-button .ui vertical animated button', onClick: @regeneratePoints, ->
+        div '.visible content', -> i '.refresh icon'
+        div '.hidden content', 'Regen'
+
+      @trainButton()
+
+
+  trainButton: =>
+    # either Train, Pause or Restart
+    if @state.isTraining
+      button '#train-button .ui yellow large labeled icon button', onClick: @pauseTraining, ->
+        i '.pause icon'; text 'Pause'
+    else  # not training
+      if @state.finishedTraining
+        button '#train-button .ui blue large labeled icon button', onClick: @startTraining, ->
+          i '.repeat icon'; text 'Restart'
+      else  # training has not started
+        button '#train-button .ui blue large labeled icon button', onClick: @startTraining, ->
+          i '.play icon'; text 'Train'
 
 
 
