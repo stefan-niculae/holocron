@@ -76,16 +76,16 @@ class Interface extends React.Component
         weights: currentWeights
 
       if @state.isTraining
-        button '#train-button .ui large labeled icon button', onClick: @pauseTraining, ->
+        button '#train-button .ui yellow large labeled icon button', onClick: @pauseTraining, ->
           i '.pause icon'
           text 'Pause'
       else  # not training
         if @state.finishedTraining
-          button '#train-button .ui positive large labeled icon button', onClick: @startTraining, ->
+          button '#train-button .ui blue large labeled icon button', onClick: @startTraining, ->
             i '.repeat icon'
             text 'Restart'
         else  # training has not started
-          button '#train-button .ui positive large labeled icon button', onClick: @startTraining, ->
+          button '#train-button .ui blue large labeled icon button', onClick: @startTraining, ->
             i '.play icon'
             text 'Train'
 
