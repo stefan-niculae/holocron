@@ -25,6 +25,8 @@ class PointsPlot extends React.Component
   render: ->
     div "##{CONF.divId} .ui container plot"
 
+  # TODO make shouldComponent update for re-updating only if points differ? (immutablejs?)
+
   componentDidMount: (props) ->
     @drawPlot props
 
@@ -65,6 +67,7 @@ class PointsPlot extends React.Component
         range: [@props.bounds.y.min, @props.bounds.y.max]
 
     if @props.weights?
+      # TODO use Plotly.relayout to avoid redrawing?
       layout.shapes = @getShapes @props
 
     data = [
@@ -72,7 +75,10 @@ class PointsPlot extends React.Component
       pointsB
     ]
 
-    Plotly.newPlot CONF.divId, data, layout
+    options =
+      displayModeBar: no
+
+    Plotly.newPlot CONF.divId, data, layout, options
 
 
   getShapes: ({bounds, weights}) ->

@@ -3,6 +3,7 @@ require '../style/custom'
 #$ = require('jquery'); window.jQuery = $  # needed for semantic
 #semantic = require 'semantic-ui/dist/semantic'
 
+# TODO switch to latest coffeescript version and use import * from '...' syntax
 # library imports
 React = require 'react'
 ReactDOM = require 'react-dom'
@@ -12,8 +13,9 @@ ReactDOM = require 'react-dom'
 PointsPlot = require './components/points-plot'
 getJSON = require './utils'
 
+
 CONF =
-  nextEpochDelay: 50  #ms
+  nextEpochDelay: 5  #ms
 
 
 

@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+# TODO switch to python 3.6 and write type hints & f'...' interpolated strings
 from flask import Flask, render_template, jsonify, send_from_directory
 import processing
 app = Flask(__name__)
