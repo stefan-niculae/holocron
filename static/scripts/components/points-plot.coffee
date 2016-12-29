@@ -14,10 +14,10 @@ CONF =
   colors:
     orange:      'rgba(250, 125, 45,  1)'
     blue:        'rgba(42,  122, 177, 1)'
-    fadedOrange: 'rgba(252, 189, 149, .15)'
-    fadedBlue:   'rgba(148, 188, 216, .15)'
+    fadedOrange: 'rgba(252, 189, 149, .1)'
+    fadedBlue:   'rgba(148, 188, 216, .1)'
     purple:      'rgba(128, 0,   128, .6)'
-    lightGrey:   'rgba(200, 200, 200, 1)'
+    lightGrey:   'rgba(220, 220, 220, 1)'
 
 
 
@@ -57,10 +57,12 @@ class PointsPlot extends React.Component
       hovermode: 'closest'
       xaxis:
         zerolinecolor: CONF.colors.lightGrey
+        showticklabels: no
         hoverformat: '.1f'
         range: [@props.bounds.x.min, @props.bounds.x.max]
       yaxis:
         zerolinecolor: CONF.colors.lightGrey
+        showticklabels: no
         hoverformat: '.1f'
         range: [@props.bounds.y.min, @props.bounds.y.max]
 
