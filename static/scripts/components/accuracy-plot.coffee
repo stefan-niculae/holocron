@@ -20,21 +20,24 @@ class AccuracyPlot extends React.Component
     @drawPlot()
 
   drawPlot: ->
-    ys = @props.training.map (p) -> p * 100
+    ys = @props.training
+    nrRemaining = @props.maxEpoch - ys.length
 
     training =
-      x: [1 .. ys.length]
-      y: ys
+      x: [1 .. @props.maxEpoch]
+      y: ys.concat Array(nrRemaining).fill(null)
       text: "epoch <b>#{n}</b>" for n in [1 .. ys.length]
+      line: shape: 'spline'  # a little curved
 
     yMin = -1 # of zero so the marker can be fully visible
-    yMax =  1 + Math.max ys...
+    yMax = 1.1 * Math.max ys...
 
     layout =
       xaxis:
         tickprefix: 'epoch '
         showticklabels: no
         showgrid: no
+        zeroline: off
       yaxis:
         ticksuffix: '% error'
         showticklabels: no

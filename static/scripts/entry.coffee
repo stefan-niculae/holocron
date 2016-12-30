@@ -7,7 +7,7 @@ require '../style/custom'
 # library imports
 React = require 'react'
 ReactDOM = require 'react-dom'
-{div, button, crel, i, text, section} = require 'teact'
+{div, button, crel, i, text, section, span} = require 'teact'
 
 # user imports
 getJSON = require './utils'
@@ -16,7 +16,7 @@ AccuracyPlot = require './components/accuracy-plot'
 
 
 CONF =
-  nextEpochDelay: 10  #ms
+  nextEpochDelay: 100  #ms
 
 
 
@@ -105,7 +105,7 @@ class Interface extends React.Component
         section '#points-plot-segment .ui loading segment plot-segment'
         return
 
-      if @state.history? and @state.hasStartedTraining
+      if @state.hasStartedTraining
         currentWeights = @state.history[@state.currentEpoch].weights
 
       section '#points-plot-segment .ui segment plot-segment', =>
@@ -133,8 +133,20 @@ class Interface extends React.Component
 
   accuracyPlot: =>
     section '#accuracy-plot-segment .ui segment plot-segment', =>
+      if not @state.hasStartedTraining
+        div '#not-started-info .ui grid row', ->
+          div '.middle aligned column', ->
+            i '.hand pointer icon'; text 'start Training to see the accuracy chart'
+        return
+
+
+      nrPoints = @state.points.A.x.length + @state.points.B.x.length
+      errorPercentages = @state.history[0 ... @state.currentEpoch + 1]
+        .map (h) => h.misclassified / nrPoints * 100
+
       crel AccuracyPlot,
-        training: [.7, .6, .4, .2, .05, 0]
+        training: errorPercentages
+        maxEpoch: @state.history.length
 
 
 

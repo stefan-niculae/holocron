@@ -70,25 +70,27 @@ class Perceptron:
     def predict(self, point):
         return Perceptron.hardlims(self.weights.dot(point))
 
-    def train(self, dataset, lr=.01, n_epochs=100, keep_history=False):
+    def train(self, dataset, lr=.01, n_epochs=100, keep_history=False, min_convergence_epochs=4):
         if keep_history and self.history:
             return  # don't reset the already present history
 
-        self.weights = np.random.uniform(-1, 1, size=self.dimension + 1)  # random init, the last dimension is the bias
-        self.history = []
+        while not self.history or len(self.history) < min_convergence_epochs:
+            self.history = []
+            self.weights = np.random.uniform(-1, 1,                    # random init
+                                             size=self.dimension + 1)  # the last dimension is the bias
 
-        for epoch in range(n_epochs):
-            # np.random.shuffle(data)  # TODO?
-            for point, expected in dataset:
-                error = expected - self.predict(point)
-                self.weights += lr * error * point
+            for epoch in range(n_epochs):
+                # np.random.shuffle(data)  # TODO?
+                for point, expected in dataset:
+                    error = expected - self.predict(point)
+                    self.weights += lr * error * point
 
-            misclassified = [point for point, expected in dataset if self.predict(point) != expected]
-            self.history.append({
-                'weights': self.weights.tolist(),
-                'misclassified': [p.tolist() for p in misclassified]  # for serialization
-            })
+                misclassified = [point for point, expected in dataset if self.predict(point) != expected]
+                self.history.append({
+                    'weights': self.weights.tolist(),
+                    'misclassified': len(misclassified)  # [p.tolist() for p in misclassified]  # for serialization
+                })
 
-            accuracy = 1 - len(misclassified) / dataset.n_points
-            if accuracy == 1:  # classifies everything correctly
-                break
+                accuracy = 1 - len(misclassified) / dataset.n_points
+                if accuracy == 1:  # classifies everything correctly
+                    break
