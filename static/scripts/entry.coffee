@@ -7,11 +7,12 @@ require '../style/custom'
 # library imports
 React = require 'react'
 ReactDOM = require 'react-dom'
-{div, button, crel, i, text} = require 'teact'
+{div, button, crel, i, text, section} = require 'teact'
 
 # user imports
-PointsPlot = require './components/points-plot'
 getJSON = require './utils'
+PointsPlot = require './components/points-plot'
+AccuracyPlot = require './components/accuracy-plot'
 
 
 CONF =
@@ -84,25 +85,34 @@ class Interface extends React.Component
 
 
   render: ->
-    div '#interface', =>
-      if not(@state.bounds? and @state.points?)
-        text 'loading'  # TODO loading animation
-        return
+    div '#interface .ui centered container', =>
 
-      if @state.history? and @state.hasStartedTraining
-        currentWeights = @state.history[@state.currentEpoch].weights
-
-      crel PointsPlot,
-        bounds: @state.bounds
-        points: @state.points
-        weights: currentWeights
+      @pointsPlot()
 
       button '#regen-button .ui vertical animated button', onClick: @regeneratePoints, ->
+        # TODO make the button clickable even when the hidden content has not fully appeared
         div '.visible content', -> i '.refresh icon'
         div '.hidden content', 'Regen'
 
       @trainButton()
 
+      @accuracyPlot()
+
+
+  pointsPlot: =>
+    section '#points-plot-segment .ui segment plot-segment', =>
+      if not(@state.bounds? and @state.points?)  # loading
+        section '#points-plot-segment .ui loading segment plot-segment'
+        return
+
+      if @state.history? and @state.hasStartedTraining
+        currentWeights = @state.history[@state.currentEpoch].weights
+
+      section '#points-plot-segment .ui segment plot-segment', =>
+        crel PointsPlot,
+          bounds: @state.bounds
+          points: @state.points
+          weights: currentWeights
 
   trainButton: =>
     # either Train, Pause or Restart
@@ -120,6 +130,12 @@ class Interface extends React.Component
       else  # training has not started
         button '#train-button .ui blue large labeled icon button', onClick: @startTraining, ->
           i '.play icon'; text 'Train'
+
+  accuracyPlot: =>
+    section '#accuracy-plot-segment .ui segment plot-segment', =>
+      crel AccuracyPlot,
+        training: [.7, .6, .4, .2, .05, 0]
+
 
 
 

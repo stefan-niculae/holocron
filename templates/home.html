@@ -11,6 +11,7 @@
 
   <title>Holocron AI</title>
 
+  {# TODO install url-loader for webpack so this can be moved from here into the entry script #}
   <link rel="stylesheet" href="{{ url_for('npm', filename='semantic-ui/dist/semantic.min.css') }}">
 
 </head>
@@ -19,22 +20,8 @@
   <div class="ui middle aligned center aligned grid">
     <div class="column">
       <div id="react-container"></div>
-{#      <div id="points-chart" class="ui container"><!-- Plotly chart will be drawn inside this DIV --></div>#}
-{#      <button id=regen-button class="ui center button">Re-generate points</button>#}
-{#      <button id="regen-button" class="ui large icon button" data-tooltip="Generate new points" data-position="top center">#}
-{#        <i class="refresh icon"></i>#}
-{#      </button>#}
-{##}
-{#      <button class="ui labeled icon button">#}
-{#        <i class="pause icon"></i>#}
-{#        Pause#}
-{#      </button>#}
     </div>
   </div>
-
-
-
-{#               <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>#}
 
   <script src="{{ url_for('static', filename='scripts/bundle.js') }}"></script>
 </body>

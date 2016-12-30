@@ -22,15 +22,15 @@ CONF =
 
 class PointsPlot extends React.Component
   render: ->
-    div "##{CONF.divId} .ui container plot"
+    div "##{CONF.divId} .plot"
 
   # TODO make shouldComponentUpdate for re-updating only if points differ? (immutablejs?)
 
-  componentDidMount: (props) ->
-    @drawPlot props
+  componentDidMount: ->
+    @drawPlot()
 
-  componentDidUpdate: (props) ->
-    @drawPlot props
+  componentDidUpdate: ->
+    @drawPlot()
 
 
   drawPlot: ->
@@ -64,10 +64,15 @@ class PointsPlot extends React.Component
         showticklabels: no
         hoverformat: '.1f'
         range: [@props.bounds.y.min, @props.bounds.y.max]
+      paper_bgcolor: 'rgba(0,0,0,.025)'
+      margin: t: 0, b: 0, l: 0, r: 0
+      legend:
+        x: .05
+        y: .95
 
     if @props.weights?
       # TODO use Plotly.relayout to avoid redrawing?
-      layout.shapes = @getShapes @props
+      layout.shapes = @getShapes()
 
     data = [
       pointsA
@@ -80,14 +85,14 @@ class PointsPlot extends React.Component
     Plotly.newPlot CONF.divId, data, layout, options
 
 
-  getShapes: ({bounds, weights}) ->
+  getShapes: ->
     """
     ax + by + c = 0
     by + ax + c = 0
     by = -(ax + c)
      y = -(ax + c) / b
     """
-    [a, b, c] = weights.map clamp_magnitude
+    [a, b, c] = @props.weights.map clamp_magnitude
     f = (x) -> -(a * x + c) / b
 
     flip = (o) ->  # TODO: is this a hack? test for centroids that are not lower-left and upper-right and check actual number of misclassified against graph
@@ -96,18 +101,21 @@ class PointsPlot extends React.Component
       else
         o
 
-    fL = new Point bounds.x.min, f(bounds.x.min), 'fA'  # left
-    fR = new Point bounds.x.max, f(bounds.x.max), 'fB'  # right
-    interwoven = interweaveIntersections fL, fR, bounds
+    xMin = @props.bounds.x.min
+    xMax = @props.bounds.x.max
+
+    fL = new Point xMin, f(xMin), 'fA'  # left
+    fR = new Point xMax, f(xMax), 'fB'  # right
+    interwoven = interweaveIntersections fL, fR, @props.bounds
     interwovenA = interwoven.filter (c) -> flip(orientation fL, fR, c) >= 0  # all corners to the left AND the intersections
     interwovenB = interwoven.filter (c) -> flip(orientation fL, fR, c) <= 0  # all corners to the right AND the intersections
 
     shapes = [
       type: 'line'
-      x0:   bounds.x.min
-      y0:   f(bounds.x.min)
-      x1:   bounds.x.max
-      y1:   f(bounds.x.max)
+      x0:   xMin
+      y0:   f(xMin)
+      x1:   xMax
+      y1:   f(xMax)
       line:
         color: CONF.colors.purple
         width: CONF.lineWidth
