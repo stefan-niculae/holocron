@@ -5,10 +5,20 @@ import numpy as np
 import pandas as pd
 
 
+pd.options.mode.chained_assignment = None  # default='warn'
+
+
+label_to_number = {
+    'A': -1,
+    'B': +1
+}
+
+
 class Dataset:
-    def __init__(self, coord_max=1, class_split=.5, n_points=20):
+    def __init__(self, coord_max=1, class_split=.5, test_split=.15, n_points=50):
         self.coord_max = coord_max
         self.class_split = class_split
+        self.test_split = test_split
         self.n_points = n_points
 
         self.A_x = self.A_y = self.A_label = None
@@ -17,40 +27,38 @@ class Dataset:
         self.generate()
 
     def generate(self):
-        m = self.coord_max * .4  # TODO random centroids for A and B? (but not too close to the edge)
-        s = self.coord_max * .2  # TODO random spread for A and B (but not too high compared to edges)
+        m = self.coord_max * .35  # TODO random centroids for A and B? (but not too close to the edge)
+        s = self.coord_max * .25  # TODO random spread for A and B (but not too high compared to edges)
 
-        self.A_x, self.A_y, self.A_label = self.generate_for_class(
-            center=(-m, -m),
-            spread=(s, s),
-            label=-1,
-            n_points=int(self.n_points * self.class_split))
+        A = self.gen(centers=(-m, -m), spreads=(s, s), class_per=self.class_split)
+        A.label = 'A'
 
-        self.B_x, self.B_y, self.B_label = self.generate_for_class(
-            center=(m, m),
-            spread=(s, s),
-            label=1,
-            n_points=int(self.n_points * (1 - self.class_split)))
+        B = self.gen(centers=(m, m), spreads=(s, s), class_per=1 - self.class_split)
+        B.label = 'B'
 
-        self.df = pd.DataFrame({
-            'x': np.append(self.A_x, self.B_x),
-            'y': np.append(self.A_y, self.B_y),
-            'label': np.append(self.A_label, self.B_label)},
-            columns=['x', 'y', 'bias', 'label'])
-        self.df['bias'] = 1
+        self.df = A.append(B).reset_index(drop=True)
 
-    @staticmethod
-    def generate_for_class(center, spread, label, n_points):
-        xs = np.random.normal(center[0], spread[0], size=n_points)
-        ys = np.random.normal(center[1], spread[1], size=n_points)
-        labels = [label] * n_points
-        return xs, ys, labels
+    def gen(self, centers, spreads, class_per):
+        n_points = int(self.n_points * class_per)
+        df = pd.DataFrame(columns=['x', 'y', 'label', 'set'])
 
-    def __iter__(self):
+        df.x = np.random.normal(centers[0], spreads[0], size=n_points)
+        df.y = np.random.normal(centers[1], spreads[1], size=n_points)
+
+        df.set = 'train'
+        df.set[:int(n_points * self.test_split)] = 'test'
+
+        return df
+
+    def data(self, only_from_set=None):
         # training data
         for i, row in self.df.iterrows():
-            point = np.array([row.x, row.y, row.bias])
-            yield point, row.label
+            bias = 1
+            point = np.array([row.x, row.y, bias])
+            expected = label_to_number[row.label]
+
+            if not only_from_set or row.set == only_from_set:
+                yield point, expected
 
 
 class Perceptron:
@@ -74,6 +82,7 @@ class Perceptron:
         if keep_history and self.history:
             return  # don't reset the already present history
 
+        # TODO best model checkpoint for non-convergence
         while not self.history or len(self.history) < min_convergence_epochs:
             self.history = []
             self.weights = np.random.uniform(-1, 1,                    # random init
@@ -81,16 +90,18 @@ class Perceptron:
 
             for epoch in range(n_epochs):
                 # np.random.shuffle(data)  # TODO?
-                for point, expected in dataset:
+                for point, expected in dataset.data('train'):
                     error = expected - self.predict(point)
                     self.weights += lr * error * point
 
-                misclassified = [point for point, expected in dataset if self.predict(point) != expected]
+                misclassified_train = [p for p, exp in dataset.data('train') if self.predict(p) != exp]
+                misclassified_test  = [p for p, exp in dataset.data('test')  if self.predict(p) != exp]
                 self.history.append({
                     'weights': self.weights.tolist(),
-                    'misclassified': len(misclassified)  # [p.tolist() for p in misclassified]  # for serialization
+                    'misclassifiedTrain': len(misclassified_train),
+                    'misclassifiedTest': len(misclassified_test),
                 })
 
-                accuracy = 1 - len(misclassified) / dataset.n_points
-                if accuracy == 1:  # classifies everything correctly
+                train_accuracy = 1 - len(misclassified_train) / dataset.n_points
+                if train_accuracy == 1:  # classifies everything correctly
                     break

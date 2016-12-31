@@ -36,16 +36,8 @@ def bounds():
 
 @app.route('/points')
 def points():
-    return jsonify({
-        'A': {
-            'x': dataset.A_x.tolist(),
-            'y': dataset.A_y.tolist()
-        },
-        'B': {
-            'x': dataset.B_x.tolist(),
-            'y': dataset.B_y.tolist()
-        },
-    })
+    records = dataset.df.to_dict(orient='records')
+    return jsonify(records)
 
 
 @app.route('/training_history')

@@ -20,17 +20,35 @@ class AccuracyPlot extends React.Component
     @drawPlot()
 
   drawPlot: ->
-    ys = @props.training
-    nrRemaining = @props.maxEpoch - ys.length
+    epochs = [1 .. @props.maxEpoch]
+    nrRemaining = @props.maxEpoch - epochs.length
+    remainings = Array(nrRemaining).fill(null)
+
+    console.log @props.training
+    console.log @props.test
 
     training =
-      x: [1 .. @props.maxEpoch]
-      y: ys.concat Array(nrRemaining).fill(null)
-      text: "epoch <b>#{n}</b>" for n in [1 .. ys.length]
-      line: shape: 'spline'  # a little curved
+      x: epochs
+      y: @props.training.concat remainings
+      name: 'training'
+      text: "epoch <b>#{n}</b>" for n in [1 .. epochs.length]
+      line:
+        width: 3
+        shape: 'spline'  # a little curved
+        color: 'purple'
+
+    test =
+      x: epochs
+      y: @props.test.concat remainings
+      name: 'test'
+      text: "epoch <b>#{n}</b>" for n in [1 .. epochs.length]
+      line:
+        width: 1
+        shape: 'spline'  # a little curved
+        color: 'grey'
 
     yMin = -1 # of zero so the marker can be fully visible
-    yMax = 1.1 * Math.max ys...
+    yMax = 1.1 * Math.max Math.max(@props.training...), Math.max(@props.test...)
 
     layout =
       xaxis:
@@ -45,9 +63,15 @@ class AccuracyPlot extends React.Component
         range: [yMin, yMax]
         gridcolor: '#rgba(0,0,0,.065)'
       margin: t: 0, b: 0, l: 0, r: 0
+      paper_bgcolor: 'rgba(0,0,0,.025)'
+      legend:  # TODO always make this stay inside
+        x: .85
+        y: .95
+
 
     data = [
       training
+      test
     ]
 
     options =

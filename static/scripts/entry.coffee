@@ -7,10 +7,10 @@ require '../style/custom'
 # library imports
 React = require 'react'
 ReactDOM = require 'react-dom'
-{div, button, crel, i, text, section, span} = require 'teact'
+{div, button, crel, i, text, section, span, br} = require 'teact'
 
 # user imports
-getJSON = require './utils'
+{getJSON} = require './utils'
 PointsPlot = require './components/points-plot'
 AccuracyPlot = require './components/accuracy-plot'
 
@@ -81,6 +81,7 @@ class Interface extends React.Component
         hasStartedTraining: no
         isTraining: no
       , =>
+        clearTimeout @trainingTimeout if @trainingTimeout?
         @fetchData()
 
 
@@ -89,12 +90,25 @@ class Interface extends React.Component
 
       @pointsPlot()
 
-      button '#regen-button .ui vertical animated button', onClick: @regeneratePoints, ->
-        # TODO make the button clickable even when the hidden content has not fully appeared
-        div '.visible content', -> i '.refresh icon'
-        div '.hidden content', 'Regen'
+      div '.ui grid', =>
+        div '.row', =>
+          button '#regen-button .ui vertical animated button', onClick: @regeneratePoints, ->
+            # TODO make the button clickable even when the hidden content has not fully appeared
+            div '.visible content', -> i '.refresh icon'
+            div '.hidden content', 'Regen'
 
-      @trainButton()
+          @trainButton()
+
+          # TODO? big statistic?
+#      div '.row', =>
+#        div '.ui statistic', =>
+#          span '.value', '74%'
+#          span '.label', 'accuracy'
+#
+#      div '.row', =>
+#        div '.ui statistic', =>
+#          span '#nr-misclassified .label', '12 errors'
+
 
       @accuracyPlot()
 
@@ -140,12 +154,16 @@ class Interface extends React.Component
         return
 
 
-      nrPoints = @state.points.A.x.length + @state.points.B.x.length
-      errorPercentages = @state.history[0 ... @state.currentEpoch + 1]
-        .map (h) => h.misclassified / nrPoints * 100
+      trainErrors = @state.history[0 ... @state.currentEpoch + 1]
+        .map (h) => h.misclassifiedTrain / @state.points.length * 100
+
+      testErrors  = @state.history[0 ... @state.currentEpoch + 1]
+        .map (h) => h.misclassifiedTest  / @state.points.length * 100
+
 
       crel AccuracyPlot,
-        training: errorPercentages
+        training: trainErrors
+        test: testErrors
         maxEpoch: @state.history.length
 
 

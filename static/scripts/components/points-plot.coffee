@@ -2,7 +2,7 @@
 React = require 'react'
 Plotly = require 'plotly.js/lib/core'
 {div} = require 'teact'
-
+{extend} = require '../utils'
 
 
 CONF =
@@ -13,11 +13,16 @@ CONF =
   colors:
     orange:      'rgba(250, 125, 45,  1)'
     blue:        'rgba(42,  122, 177, 1)'
-    fadedOrange: 'rgba(252, 189, 149, .1)'
-    fadedBlue:   'rgba(148, 188, 216, .1)'
-    purple:      'rgba(128, 0,   128, .6)'
+    fadedOrange: 'rgba(252, 189, 149, .05)'
+    fadedBlue:   'rgba(148, 188, 216, .05)'
+    purple:      'rgba(128, 0,   128, .5)'
     lightGrey:   'rgba(220, 220, 220, 1)'
 
+
+pointsOptions =
+  mode: 'markers'
+  marker: size:  CONF.markerSize
+  # will be extended with x, y, name and symbol
 
 
 class PointsPlot extends React.Component
@@ -34,23 +39,38 @@ class PointsPlot extends React.Component
 
 
   drawPlot: ->
-    pointsA =
-      x:       @props.points.A.x
-      y:       @props.points.A.y
-      mode:   'markers'
+    trainA = extend pointsOptions,
+      x:      @props.points.filter((p) => p.label is 'A' and p.set is 'train').map (p) => p.x
+      y:      @props.points.filter((p) => p.label is 'A' and p.set is 'train').map (p) => p.y
       marker:
+        symbol: 'circle'
         color: CONF.colors.blue
-        size:  CONF.markerSize
-      name:   'class A'
+      name:   'A training'
 
-    pointsB =
-      x:    @props.points.B.x
-      y:    @props.points.B.y
-      mode: 'markers'
+    trainB = extend pointsOptions,
+      x:      @props.points.filter((p) => p.label is 'B' and p.set is 'train').map (p) => p.x
+      y:      @props.points.filter((p) => p.label is 'B' and p.set is 'train').map (p) => p.y
+      name:   'B training'
       marker:
+        symbol: 'circle'
         color: CONF.colors.orange
-        size:  CONF.markerSize
-      name: 'class B'
+
+    testA = extend pointsOptions,
+      x:      @props.points.filter((p) => p.label is 'A' and p.set is 'test').map (p) => p.x
+      y:      @props.points.filter((p) => p.label is 'A' and p.set is 'test').map (p) => p.y
+      name:   'A test'
+      marker:
+        symbol: 'circle-open'
+        color: CONF.colors.blue
+
+    testB = extend pointsOptions,
+      x:      @props.points.filter((p) => p.label is 'B' and p.set is 'test').map (p) => p.x
+      y:      @props.points.filter((p) => p.label is 'B' and p.set is 'test').map (p) => p.y
+      name:   'B test'
+      marker:
+        symbol: 'circle-open'
+        color: CONF.colors.orange
+
 
     layout =
       hovermode: 'closest'
@@ -75,8 +95,10 @@ class PointsPlot extends React.Component
       layout.shapes = @getShapes()
 
     data = [
-      pointsA
-      pointsB
+      trainA
+      trainB
+      testA
+      testB
     ]
 
     options =

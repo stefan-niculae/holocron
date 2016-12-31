@@ -7,4 +7,27 @@ getJSON = (url, callback) ->
     callback(json, error)
 
 
-module.exports = getJSON
+clone = (obj) ->
+  if not obj? or typeof obj isnt 'object'
+    return obj
+
+  newInstance = new obj.constructor()
+  for key of obj
+    newInstance[key] = clone obj[key]
+
+  newInstance
+
+
+
+extend = (obj, properties) ->
+  newObj = clone obj
+
+  for key, val of properties
+    newObj[key] = val
+  newObj
+
+
+module.exports = {
+    getJSON,
+    extend
+}
