@@ -15,7 +15,7 @@ label_to_number = {
 
 
 class Dataset:
-    def __init__(self, coord_max=1, class_split=.5, test_split=.35, n_points=6):
+    def __init__(self, coord_max=1, class_split=.5, test_split=.25, n_points=16):
         self.coord_max = coord_max
         self.class_split = class_split
         self.test_split = test_split
