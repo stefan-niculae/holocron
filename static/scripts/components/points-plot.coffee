@@ -2,7 +2,7 @@
 React = require 'react'
 Plotly = require 'plotly.js/lib/core'
 {div} = require 'teact'
-{extend} = require '../utils'
+{extend, arraysEqual} = require '../utils'
 
 
 CONF =
@@ -29,7 +29,14 @@ class PointsPlot extends React.Component
   render: ->
     div "##{CONF.divId} .plot"
 
-  # TODO make shouldComponentUpdate for re-updating only if points differ? (immutablejs?)
+  shouldComponentUpdate: (nextProps) ->
+    # No need to redraw the plot if the points are the same
+    if arraysEqual @props.points, nextProps.points
+      # But we still need to redraw the prediction line if it is different
+      @drawPredictionLine(nextProps.weights) if !arraysEqual @props.weights, nextProps.weights
+      return false
+
+    return true
 
   componentDidMount: ->
     @drawPlot()
@@ -90,10 +97,6 @@ class PointsPlot extends React.Component
         x: .05
         y: .95
 
-    if @props.weights?
-      # TODO use Plotly.relayout to avoid redrawing?
-      layout.shapes = @getShapes()
-
     data = [
       trainA
       trainB
@@ -105,16 +108,21 @@ class PointsPlot extends React.Component
       displayModeBar: no
 
     Plotly.newPlot CONF.divId, data, layout, options
+    @drawPredictionLine @props.weights
 
 
-  getShapes: ->
+  drawPredictionLine: (weights) ->
+    if weights?
+      Plotly.relayout CONF.divId, shapes: @getShapes weights
+
+  getShapes: (weights) ->
     """
     ax + by + c = 0
     by + ax + c = 0
     by = -(ax + c)
      y = -(ax + c) / b
     """
-    [a, b, c] = @props.weights.map clamp_magnitude
+    [a, b, c] = weights.map clamp_magnitude
     f = (x) -> -(a * x + c) / b
 
     flip = (o) ->  # TODO: is this a hack? test for centroids that are not lower-left and upper-right and check actual number of misclassified against graph

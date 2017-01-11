@@ -23,17 +23,14 @@ class AccuracyPlot extends React.Component
     epochs = [1 .. @props.maxEpoch]
     nrRemaining = @props.maxEpoch - epochs.length
     remainings = Array(nrRemaining).fill(null)
-
-    console.log @props.training
-    console.log @props.test
-
+    # TODO 0 digits precision
     training =
       x: epochs
       y: @props.training.concat remainings
       name: 'training'
       text: "epoch <b>#{n}</b>" for n in [1 .. epochs.length]
       line:
-        width: 3
+        width: 2
         shape: 'spline'  # a little curved
         color: 'purple'
 
@@ -41,14 +38,13 @@ class AccuracyPlot extends React.Component
       x: epochs
       y: @props.test.concat remainings
       name: 'test'
-      text: "epoch <b>#{n}</b>" for n in [1 .. epochs.length]
       line:
         width: 1
         shape: 'spline'  # a little curved
         color: 'grey'
 
     yMin = -1 # of zero so the marker can be fully visible
-    yMax = 1.1 * Math.max Math.max(@props.training...), Math.max(@props.test...)
+    yMax = 105 # 1.1 * Math.max Math.max(@props.training...), Math.max(@props.test...)
 
     layout =
       xaxis:
@@ -66,7 +62,7 @@ class AccuracyPlot extends React.Component
       paper_bgcolor: 'rgba(0,0,0,.025)'
       legend:  # TODO always make this stay inside
         x: .85
-        y: .95
+        y: .9
 
 
     data = [

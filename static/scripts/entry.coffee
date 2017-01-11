@@ -16,7 +16,7 @@ AccuracyPlot = require './components/accuracy-plot'
 
 
 CONF =
-  nextEpochDelay: 100  #ms
+  nextEpochDelay: 1000  #ms
 
 
 
